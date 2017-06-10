@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">MyBakingApp</string>
+
+    <string name="recipe_poster">Recipe Poster</string>
+    <string name="title_recipestepdescriptionhostactivity_list">Recipe Steps</string>
+    <string name="title_recipestepdescriptionhostactivity_detail">Step Description Detail</string>
+    <string name="no_data_available">No Data Available</string>
+
+
+</resources>
