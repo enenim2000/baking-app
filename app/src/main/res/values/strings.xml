@@ -5,6 +5,13 @@
     <string name="title_recipestepdescriptionhostactivity_list">Recipe Steps</string>
     <string name="title_recipestepdescriptionhostactivity_detail">Step Description Detail</string>
     <string name="no_data_available">No Data Available</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
+    <string name="empty_view_text">Recipe list is empty!</string>
+
+    <string name="play">Play</string>
+    <string name="pause">Pause</string>
+    <string name="restart">Restart</string>
 
 
 </resources>

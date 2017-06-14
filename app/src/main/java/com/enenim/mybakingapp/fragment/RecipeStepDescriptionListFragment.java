@@ -77,6 +77,9 @@ public class RecipeStepDescriptionListFragment extends Fragment implements Const
         //set the adapter that will create the individual pages
         viewPager.setAdapter(new MyPagesAdapter());
 
+        //Use for testing espresso
+        TextView testing_test_view = (TextView)getActivity().findViewById(R.id.testing_test_view);
+        testing_test_view.setText(recipe.getName());
 
         recyclerView = (RecyclerView)getActivity().findViewById(R.id.recycler_view_recipe_step_description_list);
         recyclerView.setHasFixedSize(true);
@@ -163,14 +166,14 @@ public class RecipeStepDescriptionListFragment extends Fragment implements Const
         public Object instantiateItem(ViewGroup container, int position) {
             View page = inflater.inflate(R.layout.page, null);
 
-            TextView textViewQuantity = (TextView)page.findViewById(R.id.ingredient_quantity);
-            textViewQuantity.setText(String.valueOf(recipe.getIngredients().get(position).getQuantity()));
+            //TextView textViewQuantity = (TextView)page.findViewById(R.id.ingredient_quantity);
+            //textViewQuantity.setText(String.valueOf(recipe.getIngredients().get(position).getQuantity()));
 
             TextView textViewDescription = (TextView)page.findViewById(R.id.ingredient_description);
             textViewDescription.setText(String.valueOf(recipe.getIngredients().get(position).getIngredient()));
 
-            TextView textViewMeasure = (TextView)page.findViewById(R.id.ingredient_measure);
-            textViewMeasure.setText(String.valueOf(recipe.getIngredients().get(position).getMeasure()));
+            //TextView textViewMeasure = (TextView)page.findViewById(R.id.ingredient_measure);
+            //textViewMeasure.setText(String.valueOf(recipe.getIngredients().get(position).getMeasure()));
             //Add the page to the front of the queue
             ((ViewPager) container).addView(page, 0);
             return page;

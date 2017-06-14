@@ -17,6 +17,7 @@ import com.enenim.mybakingapp.rest.ApiClient;
 import com.enenim.mybakingapp.rest.ApiInterface;
 import com.enenim.mybakingapp.util.CommonUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -24,6 +25,9 @@ import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import timber.log.Timber;
+
+import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
 
 public class MainActivity extends AppCompatActivity implements Constants {
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -44,6 +48,8 @@ public class MainActivity extends AppCompatActivity implements Constants {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
+        Timber.d("Activity Created");
+
         context = getApplicationContext();
         dataAdapter = new DataAdapter();
         dataAdapter.setContext(context);
@@ -56,8 +62,11 @@ public class MainActivity extends AppCompatActivity implements Constants {
 
         mLoadingIndicator.setVisibility(View.VISIBLE);
 
+        Timber.i("About to make rest call to api service");
+
         ApiInterface apiService =
                 ApiClient.getClient().create(ApiInterface.class);
+
 
         Call<List<Recipe>> call = apiService.getRecipes();
         call.enqueue(new Callback<List<Recipe>>() {
@@ -65,9 +74,18 @@ public class MainActivity extends AppCompatActivity implements Constants {
             public void onResponse(Call<List<Recipe>> call, Response<List<Recipe>> response) {
                 mLoadingIndicator.setVisibility(View.INVISIBLE);
 
-                initViews(response.body());
+                List<Recipe> recipes;
 
-                Log.d(TAG, "Number of recipes received: " + recipes.size());
+                if(response != null){
+                    recipes = response.body();
+                    Timber.d("Succesfully fetched data from rest service, recipes[Recipe{....}] --> ", recipes);
+                }else {
+                    recipes = new ArrayList<>();
+                }
+
+                initViews(recipes);
+
+                Timber.i("Number of recipes received: " + recipes.size());
             }
 
             @Override

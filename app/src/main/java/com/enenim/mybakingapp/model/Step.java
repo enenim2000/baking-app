@@ -6,10 +6,6 @@ import android.os.Parcelable;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-/**
- * Created by enenim on 5/28/17.
- */
-
 public class Step implements Parcelable{
 
     @Expose

@@ -9,8 +9,15 @@
     <dimen name="text_margin">16dp</dimen>
 
 
-
     <dimen name="dim_progress_bar">80dp</dimen>
-    <dimen name="margin_image_arrow">5dp</dimen>
+    <dimen name="margin_image_arrow">2dp</dimen>
     <dimen name="margin_ingredients_text_view_margin">5dp</dimen>
+    <dimen name="margin_ingredients_text_view_padding">5dp</dimen>
+    <dimen name="margin_image_button">15dp</dimen>
+
+    <!--
+Refer to App Widget Documentation for margin information
+http://developer.android.com/guide/topics/appwidgets/index.html#CreatingLayout
+    -->
+    <dimen name="widget_margin">8dp</dimen>
 </resources>
