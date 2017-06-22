@@ -7,15 +7,17 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
 import com.enenim.mybakingapp.config.Constants;
+import com.enenim.mybakingapp.fragment.MediaPlayerFragment;
 import com.enenim.mybakingapp.fragment.RecipeStepDescriptionDetailFragment;
 import com.enenim.mybakingapp.fragment.RecipeStepDescriptionListFragment;
 import com.enenim.mybakingapp.model.Recipe;
 import com.enenim.mybakingapp.model.Step;
 import com.enenim.mybakingapp.util.CommonUtil;
+import com.google.android.exoplayer2.ExoPlayer;
 
 import butterknife.ButterKnife;
 
-public class RecipeStepDescriptionHostActivity extends AppCompatActivity implements RecipeStepDescriptionListFragment.OnFragmentInteractionListener, Constants {
+public class RecipeStepDescriptionHostActivity extends AppCompatActivity implements RecipeStepDescriptionListFragment.OnListFragmentInteractionListener, MediaPlayerFragment.OnDetailFragmentInteractionListener, Constants {
     private Recipe recipe;
 
     @Override
@@ -61,7 +63,7 @@ public class RecipeStepDescriptionHostActivity extends AppCompatActivity impleme
         }
     }
 
-    public void onFragmentInteraction(Step step){
+    public void onListFragmentInteraction(Step step){
         //LinearLayout detailFragmentLayout = (LinearLayout) findViewById(R.id.recipe_step_description_detail_fragment_container);
 
         /*if(detailFragmentLayout != null){//Two-pane mode
@@ -99,5 +101,10 @@ public class RecipeStepDescriptionHostActivity extends AppCompatActivity impleme
     public void onSaveInstanceState(Bundle outState){
         outState.putParcelable(KEY_RECIPE, recipe);
         super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onDetailFragmentInteraction(Step step) {
+
     }
 }

@@ -9,7 +9,7 @@
     <LinearLayout
         android:id="@+id/recipe_step_description_list_fragment_container"
         android:orientation="vertical"
-        android:layout_weight="1.5"
+        android:layout_weight="2.0"
         android:layout_width="0dp"
         android:layout_height="match_parent">
 
@@ -17,15 +17,9 @@
 
     </LinearLayout>
 
-    <!-- A small divider -->
-    <View
-        android:layout_width="1dp"
-        android:layout_height="match_parent"
-        android:background="@android:color/darker_gray" />
-
     <LinearLayout
         android:id="@+id/recipe_step_description_detail_fragment_container"
-        android:layout_weight="2.5"
+        android:layout_weight="2.0"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:background="@android:color/white"

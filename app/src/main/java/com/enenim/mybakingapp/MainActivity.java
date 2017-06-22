@@ -4,6 +4,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.VisibleForTesting;
+import android.support.test.espresso.IdlingResource;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,25 +19,26 @@ import com.enenim.mybakingapp.model.Recipe;
 import com.enenim.mybakingapp.rest.ApiClient;
 import com.enenim.mybakingapp.rest.ApiInterface;
 import com.enenim.mybakingapp.util.CommonUtil;
+import com.enenim.mybakingapp.util.RetrofitUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import timber.log.Timber;
 
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
-
-public class MainActivity extends AppCompatActivity implements Constants {
+public class MainActivity extends AppCompatActivity implements Constants, RetrofitUtil.RequestCallBack {
     private static final String TAG = MainActivity.class.getSimpleName();
     private RecyclerView.LayoutManager layoutManager;
     private Context context;
     private List<Recipe> recipes;
     private DataAdapter dataAdapter;
+    private ApiInterface apiService;
+
+    // The Idling Resource which will be null in production.
+    //@Nullable
+    private SimpleIdlingResource mIdlingResource;
 
     @BindView(R.id.recycler_view_recipe)
     RecyclerView recyclerView;
@@ -64,11 +68,19 @@ public class MainActivity extends AppCompatActivity implements Constants {
 
         Timber.i("About to make rest call to api service");
 
-        ApiInterface apiService =
-                ApiClient.getClient().create(ApiInterface.class);
+        // Get the IdlingResource instance
+        getIdlingResource();
+
+        //MessageDelayer.processNetworkRequest(retrofitUtil, this, mIdlingResource);
+
+        //List<Recipe> recipes = retrofitUtil.processRequest();
+
+        //initViews(recipes);
+
+        //Timber.i("Number of recipes received: " + recipes.size());
 
 
-        Call<List<Recipe>> call = apiService.getRecipes();
+        /*Call<List<Recipe>> call = apiService.getRecipes();
         call.enqueue(new Callback<List<Recipe>>() {
             @Override
             public void onResponse(Call<List<Recipe>> call, Response<List<Recipe>> response) {
@@ -93,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements Constants {
                 // Log error here since request failed
                 Log.e(TAG, t.toString());
             }
-        });
+        });*/
     }
 
     @Override
@@ -154,4 +166,37 @@ public class MainActivity extends AppCompatActivity implements Constants {
         }));
 
     }
+
+    @Override
+    public void onDone(ArrayList<Recipe> _recipes) {
+        initViews(_recipes);
+
+        Timber.i("Number of recipes received: " + recipes.size());
+    }
+
+    /**
+     * Only called from test, creates and returns a new {@link SimpleIdlingResource}.
+     */
+    @VisibleForTesting
+    @NonNull
+    public IdlingResource getIdlingResource() {
+        if (mIdlingResource == null) {
+            mIdlingResource = new SimpleIdlingResource();
+        }
+        return mIdlingResource;
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        apiService = ApiClient.getClient().create(ApiInterface.class);
+
+        RetrofitUtil retrofitUtil = new RetrofitUtil();
+        retrofitUtil.setApiService(apiService);
+        retrofitUtil.setmLoadingIndicator(mLoadingIndicator);
+
+        retrofitUtil.processRequest(this, mIdlingResource);
+    }
+
 }

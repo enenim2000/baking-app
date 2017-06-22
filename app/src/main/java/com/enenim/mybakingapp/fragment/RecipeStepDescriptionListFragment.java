@@ -1,8 +1,6 @@
 package com.enenim.mybakingapp.fragment;
 
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
@@ -13,34 +11,34 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.enenim.mybakingapp.MainActivity;
 import com.enenim.mybakingapp.R;
-import com.enenim.mybakingapp.RecipeStepDescriptionHostActivity;
 import com.enenim.mybakingapp.RecipeStepListDataAdapter;
 import com.enenim.mybakingapp.RecyclerItemClickListener;
 import com.enenim.mybakingapp.config.Constants;
 import com.enenim.mybakingapp.model.Recipe;
 import com.enenim.mybakingapp.model.Step;
+import com.enenim.mybakingapp.util.CommonUtil;
 
 import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link RecipeStepDescriptionListFragment.OnFragmentInteractionListener} interface
+ * {@link RecipeStepDescriptionListFragment.OnListFragmentInteractionListener} interface
  * to handle interaction events.
  * Use the {@link RecipeStepDescriptionListFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
 public class RecipeStepDescriptionListFragment extends Fragment implements Constants {
 
-    private OnFragmentInteractionListener mListener;
+    private OnListFragmentInteractionListener mListener;
+
     private Recipe recipe;
     private List<Step> steps;
     private RecyclerView recyclerView;
     private RecipeStepListDataAdapter recipeStepListDataAdapter;
+    private Context context;
 
     private LayoutInflater inflater;
     private ViewPager viewPager;
@@ -51,16 +49,28 @@ public class RecipeStepDescriptionListFragment extends Fragment implements Const
 
     public static RecipeStepDescriptionListFragment newInstance(Recipe recipe) {
         RecipeStepDescriptionListFragment fragment = new RecipeStepDescriptionListFragment();
+        fragment.setRecipe(recipe);
         Bundle args = new Bundle();
         args.putParcelable(KEY_RECIPE, recipe);
         fragment.setArguments(args);
         return fragment;
     }
 
+    public Recipe getRecipe() {
+        return recipe;
+    }
+
+    public void setRecipe(Recipe recipe) {
+        this.recipe = recipe;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
+
+        if(recipe != null){
+            steps = recipe.getSteps();
+        } else if (getArguments() != null) {
             recipe = getArguments().getParcelable(KEY_RECIPE);
             steps = recipe.getSteps();
         }
@@ -96,14 +106,25 @@ public class RecipeStepDescriptionListFragment extends Fragment implements Const
             @Override
             public void onItemClick(View view, int position) {
                 //Update Detail pane for two pane mode device, or Replace fragment with recipe description detail fragment
-                Step step = steps.get(position);
-                Toast.makeText(getActivity(), "Long click, selected: " + step.getShortDescription(), Toast.LENGTH_LONG).show();
+                if(getActivity().getResources().getBoolean(R.bool.is_landscape) || CommonUtil.isXLargeScreen(getActivity())){ //two-pane mode
+                    RecipeStepDescriptionDetailFragment recipeStepDescriptionDetailFragment = RecipeStepDescriptionDetailFragment.newInstance(steps.get(position));
+                    // Replace the existing fragment on the right with a new one to show updated detail
+                    getActivity().getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.recipe_step_description_detail_fragment_container, recipeStepDescriptionDetailFragment)
+                            .commit();
+                }else {
+                    RecipeStepDescriptionDetailFragment recipeStepDescriptionDetailFragment = RecipeStepDescriptionDetailFragment.newInstance(steps.get(position));
+                    getActivity().getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.recipe_step_description_list_fragment_portrait_container, recipeStepDescriptionDetailFragment)
+                            .addToBackStack(null)
+                            .commit();
+                }
             }
 
             @Override
             public void onItemLongClick(View view, int position) {
-                Step step = steps.get(position);
-                Toast.makeText(getActivity(), "Long click, selected: " + step.getShortDescription(), Toast.LENGTH_LONG).show();
+                //Step step = steps.get(position);
+                //Toast.makeText(getActivity(), "Long click, selected: " + step.getShortDescription(), Toast.LENGTH_LONG).show();
             }
         }));
     }
@@ -118,15 +139,15 @@ public class RecipeStepDescriptionListFragment extends Fragment implements Const
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Step step) {
         if (mListener != null) {
-            mListener.onFragmentInteraction(step);
+            mListener.onListFragmentInteraction(step);
         }
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
+        if (context instanceof OnListFragmentInteractionListener) {
+            mListener = (OnListFragmentInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -149,9 +170,8 @@ public class RecipeStepDescriptionListFragment extends Fragment implements Const
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Step step);
+    public interface OnListFragmentInteractionListener {
+        void onListFragmentInteraction(Step step);
     }
 
     //Implement PagerAdapter Class to handle individual page creation

@@ -63,8 +63,8 @@ public class RecipeStepListDataAdapter extends RecyclerView.Adapter<RecipeStepLi
 
         Picasso.with(context)
                 .load(imageUrl)
-                .placeholder(R.drawable.icon_forward_arrow)
-                .error(R.drawable.icon_forward_arrow)
+                .placeholder(R.drawable.recipe_icon)
+                .error(R.drawable.recipe_icon)
                 .into(list_item_image);
     }
 

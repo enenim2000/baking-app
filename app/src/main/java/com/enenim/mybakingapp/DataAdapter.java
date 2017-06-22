@@ -63,8 +63,8 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> im
 
         Picasso.with(context)
                 .load(imageUrl)
-                .placeholder(R.drawable.body4)
-                .error(R.drawable.body4)
+                .placeholder(R.drawable.recipe_card_icon_small)
+                .error(R.drawable.recipe_card_icon_small)
                 .into(grid_item_image);
     }
 
