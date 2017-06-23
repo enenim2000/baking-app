@@ -16,6 +16,22 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/recipe_image_view_container"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone">
+
+        <!-- Use this to display image when there is no video -->
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/recipe_image_view" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
         android:layout_weight="1.5"
         android:layout_width="match_parent"
         android:layout_height="80dp"

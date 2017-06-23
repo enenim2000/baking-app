@@ -64,22 +64,6 @@ public class RecipeStepDescriptionHostActivity extends AppCompatActivity impleme
     }
 
     public void onListFragmentInteraction(Step step){
-        //LinearLayout detailFragmentLayout = (LinearLayout) findViewById(R.id.recipe_step_description_detail_fragment_container);
-
-        /*if(detailFragmentLayout != null){//Two-pane mode
-            RecipeStepDescriptionDetailFragment recipeStepDescriptionDetailFragment = RecipeStepDescriptionDetailFragment.newInstance(step);
-            // Replace the existing fragment with a new one
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.recipe_step_description_detail_fragment_container, recipeStepDescriptionDetailFragment)
-                    .commit();
-        }else {//swap fragment for one-pane mode
-            //TODO Remove RecipeStepDescriptionDetailFragmentHostActivity and its layout, they are no longer necessary
-            RecipeStepDescriptionDetailFragment recipeStepDescriptionDetailFragment = RecipeStepDescriptionDetailFragment.newInstance(step);
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.recipe_step_description_list_fragment_portrait_container, recipeStepDescriptionDetailFragment)
-                    .addToBackStack(null)
-                    .commit();
-        }*/
 
        if(getResources().getBoolean(R.bool.is_landscape) || CommonUtil.isXLargeScreen(this)){ //two-pane mode
            RecipeStepDescriptionDetailFragment recipeStepDescriptionDetailFragment = RecipeStepDescriptionDetailFragment.newInstance(step);
@@ -88,7 +72,6 @@ public class RecipeStepDescriptionHostActivity extends AppCompatActivity impleme
                    .replace(R.id.recipe_step_description_detail_fragment_container, recipeStepDescriptionDetailFragment)
                    .commit();
         }else {
-            //TODO Commented RecipeStepDescriptionDetailFragmentHostActivity and its layout in that they are no longer necessary
             RecipeStepDescriptionDetailFragment recipeStepDescriptionDetailFragment = RecipeStepDescriptionDetailFragment.newInstance(step);
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.recipe_step_description_list_fragment_portrait_container, recipeStepDescriptionDetailFragment)

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 import android.support.test.espresso.IdlingResource;
@@ -59,17 +60,18 @@ public class MainActivity extends AppCompatActivity implements Constants, Retrof
         dataAdapter.setContext(context);
         dataAdapter.setRecipes(null);
 
-        if(savedInstanceState != null){
-            super.onRestoreInstanceState(savedInstanceState);
-            //TODO
+        if (savedInstanceState != null) {
+            recipes = savedInstanceState.getParcelableArrayList(KEY_RECIPE_LIST);
+            initViews(recipes);
+        } else {
+            mLoadingIndicator.setVisibility(View.VISIBLE);
+
+            Timber.i("About to make rest call to api service");
+
+            // Get the IdlingResource instance
+            getIdlingResource();
         }
 
-        mLoadingIndicator.setVisibility(View.VISIBLE);
-
-        Timber.i("About to make rest call to api service");
-
-        // Get the IdlingResource instance
-        getIdlingResource();
 
         //MessageDelayer.processNetworkRequest(retrofitUtil, this, mIdlingResource);
 
@@ -109,8 +111,9 @@ public class MainActivity extends AppCompatActivity implements Constants, Retrof
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState){
+    protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList(KEY_RECIPE_LIST, (ArrayList<? extends Parcelable>) recipes);
     }
 
     @Override

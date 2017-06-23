@@ -28,4 +28,26 @@ public class CommonUtil {
                 >= Configuration.SCREENLAYOUT_SIZE_XLARGE;
     }
 
+    public static String getMimeType(String url){
+        String ext = url.substring(url.indexOf(".") + 1);
+
+        if("".equalsIgnoreCase(url)){
+            return "empty";
+        }
+
+        if (ext.equalsIgnoreCase("mp4")
+                || ext.equalsIgnoreCase("flv")
+                || ext.equalsIgnoreCase("avi")) {
+            return  "video";
+        }
+
+        if (ext.equalsIgnoreCase("jpg")
+                || ext.equalsIgnoreCase("png")
+                || ext.equalsIgnoreCase("jpeg")) {
+            return  "image";
+        }
+
+        return "empty";
+    }
+
 }

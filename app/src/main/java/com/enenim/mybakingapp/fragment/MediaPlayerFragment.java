@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.enenim.mybakingapp.R;
+import com.enenim.mybakingapp.config.Constants;
 import com.enenim.mybakingapp.model.Step;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlaybackException;
@@ -33,21 +34,13 @@ import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 
-import static com.enenim.mybakingapp.config.Constants.KEY_STEP;
-
-public class MediaPlayerFragment extends Fragment implements ExoPlayer.EventListener{
+public class MediaPlayerFragment extends Fragment implements ExoPlayer.EventListener, Constants{
 
     private OnDetailFragmentInteractionListener mListener;
     private Step step;
 
     private SimpleExoPlayer mExoPlayer;
-    private SimpleExoPlayerView mPlayerView;
-    private static MediaSessionCompat mMediaSession;
-    private PlaybackStateCompat.Builder mStateBuilder;
-
     private SimpleExoPlayerView simpleExoPlayerView;
-    private SimpleExoPlayer player;
-    private ExoPlayer.EventListener exoPlayerEventListener;
 
     public MediaPlayerFragment() {
         // Required empty public constructor
@@ -82,43 +75,20 @@ public class MediaPlayerFragment extends Fragment implements ExoPlayer.EventList
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        // Initialize the player view.
-        mPlayerView = (SimpleExoPlayerView)getActivity().findViewById(R.id.playerView);
+        //CommonUtil.getMimeType(step.getVideoURL());
 
-        //initializeMediaSession();
-
-        // Initialize the player.
-        //initializePlayer(Uri.parse(step.getVideoURL()));
-
-
-        // Measures bandwidth during playback. Can be null if not required.
-        DefaultBandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
-
-        LoadControl loadControl = new DefaultLoadControl();
-
-        TrackSelector trackSelector = new DefaultTrackSelector();
-        player = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector, loadControl);
-        mPlayerView.setPlayer(player);
-
-        simpleExoPlayerView = (SimpleExoPlayerView) getActivity().findViewById(R.id.playerView);
-        simpleExoPlayerView.setVisibility(View.VISIBLE);
-
-        simpleExoPlayerView.setUseController(true);
-        simpleExoPlayerView.requestFocus();
-
-        simpleExoPlayerView.setPlayer(player);
-
-        // Produces DataSource instances through which media data is loaded.
-        DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(getContext(),
-                Util.getUserAgent(getContext(), "MyBakingApp"), bandwidthMeter);
-        // Produces Extractor instances for parsing the media data.
-        ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
-        // This is the MediaSource representing the media to be played.
-        MediaSource videoSource = new ExtractorMediaSource(Uri.parse(step.getVideoURL()),
-                dataSourceFactory, extractorsFactory, null, null);
-        // Prepare the player with the source.
-        player.prepare(videoSource);
-
+        if(!KEY_EMPTY.equalsIgnoreCase(step.getVideoURL().trim())){
+            //Do nothing
+            getActivity().findViewById(R.id.recipe_image_view_container).setVisibility(View.GONE);
+            getActivity().findViewById(R.id.playerView).setVisibility(View.VISIBLE);
+            initializePlayer(Uri.parse(step.getVideoURL()));
+        }else if(!KEY_EMPTY.equalsIgnoreCase(step.getThumbnailURL().trim())){
+            simpleExoPlayerView.setVisibility(View.GONE);
+            getActivity().findViewById(R.id.recipe_image_view_container).setVisibility(View.VISIBLE);
+        }else {
+            getActivity().findViewById(R.id.recipe_image_view_container).setVisibility(View.GONE);
+            getActivity().findViewById(R.id.playerView).setVisibility(View.INVISIBLE);
+        }
     }
 
     public void onButtonPressed(Step step) {
@@ -186,29 +156,55 @@ public class MediaPlayerFragment extends Fragment implements ExoPlayer.EventList
         this.step = step;
     }
 
-    /*private void initializePlayer(Uri uri) {
+    private void initializePlayer(Uri uri) {
         if (mExoPlayer == null) {
-            // Create an instance of the ExoPlayer.
-            TrackSelector trackSelector = new DefaultTrackSelector();
+            DefaultBandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
+
             LoadControl loadControl = new DefaultLoadControl();
-            mExoPlayer = ExoPlayerFactory.newSimpleInstance(getActivity(), trackSelector, loadControl);
-            mPlayerView.setPlayer(mExoPlayer);
 
-            // Set the ExoPlayer.EventListener to this activity.
-            //mExoPlayer.addListener(getActivity());
-
-            // Prepare the MediaSource.
-            String userAgent = Util.getUserAgent(getActivity(), "RecipeStepDescriptionHostActivity");
-            MediaSource mediaSource = new ExtractorMediaSource(uri, new DefaultDataSourceFactory(
-                    getActivity(), userAgent), new DefaultExtractorsFactory(), null, null);
-            mExoPlayer.prepare(mediaSource);
+            TrackSelector trackSelector = new DefaultTrackSelector();
+            mExoPlayer = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector, loadControl);
             mExoPlayer.setPlayWhenReady(true);
+
+            simpleExoPlayerView = (SimpleExoPlayerView) getActivity().findViewById(R.id.playerView);
+            //simpleExoPlayerView.setVisibility(View.VISIBLE);
+
+            simpleExoPlayerView.setUseController(true);
+            simpleExoPlayerView.requestFocus();
+
+            simpleExoPlayerView.setPlayer(mExoPlayer);
+
+            DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(getContext(),
+                    Util.getUserAgent(getContext(), "MyBakingApp"), bandwidthMeter);
+            ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
+            MediaSource videoSource = new ExtractorMediaSource(uri, dataSourceFactory, extractorsFactory, null, null);
+            mExoPlayer.prepare(videoSource);
         }
-    }*/
+    }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+        releasePlayer();
+    }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        releasePlayer();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        releasePlayer();
+    }
+
+    private void releasePlayer() {
+        if (mExoPlayer != null) {
+            mExoPlayer.stop();
+            mExoPlayer.release();
+            mExoPlayer = null;
+        }
     }
 }

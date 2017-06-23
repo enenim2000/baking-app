@@ -80,11 +80,9 @@ public class RecipeStepDescriptionListFragment extends Fragment implements Const
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        //get an inflater to be used to create single pages
         inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        //Reference ViewPager defined in activity
+
         viewPager = (ViewPager)getActivity().findViewById(R.id.viewPager);
-        //set the adapter that will create the individual pages
         viewPager.setAdapter(new MyPagesAdapter());
 
         //Use for testing espresso
@@ -136,7 +134,6 @@ public class RecipeStepDescriptionListFragment extends Fragment implements Const
         return inflater.inflate(R.layout.fragment_recipe_step_description_list, container, false);
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Step step) {
         if (mListener != null) {
             mListener.onListFragmentInteraction(step);
@@ -186,22 +183,15 @@ public class RecipeStepDescriptionListFragment extends Fragment implements Const
         public Object instantiateItem(ViewGroup container, int position) {
             View page = inflater.inflate(R.layout.page, null);
 
-            //TextView textViewQuantity = (TextView)page.findViewById(R.id.ingredient_quantity);
-            //textViewQuantity.setText(String.valueOf(recipe.getIngredients().get(position).getQuantity()));
-
             TextView textViewDescription = (TextView)page.findViewById(R.id.ingredient_description);
             textViewDescription.setText(String.valueOf(recipe.getIngredients().get(position).getIngredient()));
 
-            //TextView textViewMeasure = (TextView)page.findViewById(R.id.ingredient_measure);
-            //textViewMeasure.setText(String.valueOf(recipe.getIngredients().get(position).getMeasure()));
-            //Add the page to the front of the queue
             ((ViewPager) container).addView(page, 0);
+
             return page;
         }
         @Override
         public boolean isViewFromObject(View arg0, Object arg1) {
-            //See if object from instantiateItem is related to the given view
-            //required by API
             return arg0==(View)arg1;
         }
         @Override
