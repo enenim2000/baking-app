@@ -9,6 +9,6 @@ import retrofit2.http.GET;
 
 
 public interface ApiInterface {
-    @GET("/android-baking-app-json")
+    @GET("59121517_baking/baking.json")
     Call<List<Recipe>> getRecipes();
 }

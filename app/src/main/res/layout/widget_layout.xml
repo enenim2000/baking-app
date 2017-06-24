@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/baking_app_widget_image"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:src="@drawable/baking_app_widget"/>
+
+</LinearLayout>-->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:orientation="vertical"
+android:background="@color/white" >
+
+<!-- ListView to be shown on widget -->
+<ListView
+    android:id="@+id/widget_list_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" />
+
+<!-- Empty view is shown if list items are empty -->
+<TextView
+    android:id="@+id/widget_empty_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:text="@string/empty_view_text"
+    android:textColor="@color/orange"
+    android:textSize="20sp"
+    android:visibility="gone" />
+
+</LinearLayout>

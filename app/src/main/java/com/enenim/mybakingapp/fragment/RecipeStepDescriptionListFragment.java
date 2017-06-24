@@ -2,6 +2,7 @@ package com.enenim.mybakingapp.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -20,16 +21,9 @@ import com.enenim.mybakingapp.model.Recipe;
 import com.enenim.mybakingapp.model.Step;
 import com.enenim.mybakingapp.util.CommonUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link RecipeStepDescriptionListFragment.OnListFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link RecipeStepDescriptionListFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class RecipeStepDescriptionListFragment extends Fragment implements Constants {
 
     private OnListFragmentInteractionListener mListener;
@@ -68,11 +62,18 @@ public class RecipeStepDescriptionListFragment extends Fragment implements Const
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if(recipe != null){
-            steps = recipe.getSteps();
-        } else if (getArguments() != null) {
-            recipe = getArguments().getParcelable(KEY_RECIPE);
-            steps = recipe.getSteps();
+        setRetainInstance(true);
+
+        if(savedInstanceState == null || !savedInstanceState.containsKey(KEY_STEPS)) {
+            if(recipe != null){
+                steps = recipe.getSteps();
+            } else if (getArguments() != null) {
+                recipe = getArguments().getParcelable(KEY_RECIPE);
+                steps = recipe.getSteps();
+            }
+        }
+        else {
+            steps = savedInstanceState.getParcelableArrayList(KEY_STEPS);
         }
     }
 
@@ -105,8 +106,12 @@ public class RecipeStepDescriptionListFragment extends Fragment implements Const
             public void onItemClick(View view, int position) {
                 //Update Detail pane for two pane mode device, or Replace fragment with recipe description detail fragment
                 if(getActivity().getResources().getBoolean(R.bool.is_landscape) || CommonUtil.isXLargeScreen(getActivity())){ //two-pane mode
+
+                    /*getActivity().getSupportFragmentManager().beginTransaction()
+                            .add(R.id.recipe_step_description_list_fragment_container, recipeStepDescriptionDetailFragment)
+                            .commit();*/
+
                     RecipeStepDescriptionDetailFragment recipeStepDescriptionDetailFragment = RecipeStepDescriptionDetailFragment.newInstance(steps.get(position));
-                    // Replace the existing fragment on the right with a new one to show updated detail
                     getActivity().getSupportFragmentManager().beginTransaction()
                             .replace(R.id.recipe_step_description_detail_fragment_container, recipeStepDescriptionDetailFragment)
                             .commit();
@@ -121,10 +126,15 @@ public class RecipeStepDescriptionListFragment extends Fragment implements Const
 
             @Override
             public void onItemLongClick(View view, int position) {
-                //Step step = steps.get(position);
-                //Toast.makeText(getActivity(), "Long click, selected: " + step.getShortDescription(), Toast.LENGTH_LONG).show();
+
             }
         }));
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putParcelableArrayList(KEY_STEPS, (ArrayList<? extends Parcelable>) steps);
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -157,16 +167,6 @@ public class RecipeStepDescriptionListFragment extends Fragment implements Const
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
     public interface OnListFragmentInteractionListener {
         void onListFragmentInteraction(Step step);
     }

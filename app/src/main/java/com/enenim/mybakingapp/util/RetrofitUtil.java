@@ -62,7 +62,7 @@ public class RetrofitUtil {
 
                 if(response != null){
                     recipes = (ArrayList<Recipe>) response.body();
-                    Timber.d("Succesfully fetched data from rest service, recipes[Recipe{....}] --> ", recipes);
+                    Timber.d("Succesfully fetched data from rest service, recipes:[Recipe{....}] --> ", recipes);
                 }
 
                 callback.onDone(recipes);

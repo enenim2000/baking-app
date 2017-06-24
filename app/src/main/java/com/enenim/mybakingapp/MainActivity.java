@@ -6,12 +6,12 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.support.test.espresso.IdlingResource;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 
@@ -37,8 +37,7 @@ public class MainActivity extends AppCompatActivity implements Constants, Retrof
     private DataAdapter dataAdapter;
     private ApiInterface apiService;
 
-    // The Idling Resource which will be null in production.
-    //@Nullable
+    @Nullable
     private SimpleIdlingResource mIdlingResource;
 
     @BindView(R.id.recycler_view_recipe)
@@ -67,47 +66,7 @@ public class MainActivity extends AppCompatActivity implements Constants, Retrof
             mLoadingIndicator.setVisibility(View.VISIBLE);
 
             Timber.i("About to make rest call to api service");
-
-            // Get the IdlingResource instance
-            getIdlingResource();
         }
-
-
-        //MessageDelayer.processNetworkRequest(retrofitUtil, this, mIdlingResource);
-
-        //List<Recipe> recipes = retrofitUtil.processRequest();
-
-        //initViews(recipes);
-
-        //Timber.i("Number of recipes received: " + recipes.size());
-
-
-        /*Call<List<Recipe>> call = apiService.getRecipes();
-        call.enqueue(new Callback<List<Recipe>>() {
-            @Override
-            public void onResponse(Call<List<Recipe>> call, Response<List<Recipe>> response) {
-                mLoadingIndicator.setVisibility(View.INVISIBLE);
-
-                List<Recipe> recipes;
-
-                if(response != null){
-                    recipes = response.body();
-                    Timber.d("Succesfully fetched data from rest service, recipes[Recipe{....}] --> ", recipes);
-                }else {
-                    recipes = new ArrayList<>();
-                }
-
-                initViews(recipes);
-
-                Timber.i("Number of recipes received: " + recipes.size());
-            }
-
-            @Override
-            public void onFailure(Call<List<Recipe>>call, Throwable t) {
-                // Log error here since request failed
-                Log.e(TAG, t.toString());
-            }
-        });*/
     }
 
     @Override
@@ -182,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements Constants, Retrof
      */
     @VisibleForTesting
     @NonNull
-    public IdlingResource getIdlingResource() {
+    public SimpleIdlingResource getIdlingResource() {
         if (mIdlingResource == null) {
             mIdlingResource = new SimpleIdlingResource();
         }
@@ -193,13 +152,15 @@ public class MainActivity extends AppCompatActivity implements Constants, Retrof
     protected void onStart() {
         super.onStart();
 
+        //getIdlingResource();
+
         apiService = ApiClient.getClient().create(ApiInterface.class);
 
         RetrofitUtil retrofitUtil = new RetrofitUtil();
         retrofitUtil.setApiService(apiService);
         retrofitUtil.setmLoadingIndicator(mLoadingIndicator);
 
-        retrofitUtil.processRequest(this, mIdlingResource);
+        retrofitUtil.processRequest(this, getIdlingResource());
     }
 
 }

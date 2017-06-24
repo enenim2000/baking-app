@@ -19,14 +19,26 @@ import butterknife.ButterKnife;
 
 public class RecipeStepDescriptionHostActivity extends AppCompatActivity implements RecipeStepDescriptionListFragment.OnListFragmentInteractionListener, MediaPlayerFragment.OnDetailFragmentInteractionListener, Constants {
     private Recipe recipe;
+    private boolean isPortraitDetailViewShowing = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        /*if(savedInstanceState != null && savedInstanceState.containsKey(KEY_PORTRAIT_DETAIL_SHOWING)){
+            if(getResources().getBoolean(R.bool.is_landscape) && savedInstanceState.getBoolean(KEY_PORTRAIT_DETAIL_SHOWING)){
+                setContentView(R.layout.activity_recipe_step_description_host_video_in_full_view);
+            }else {
+                setContentView(R.layout.activity_recipe_step_description_host);
+            }
+        }else {
+            setContentView(R.layout.activity_recipe_step_description_host);
+        }*/
+
         setContentView(R.layout.activity_recipe_step_description_host);
+
         ButterKnife.bind(this);
 
-        if(savedInstanceState != null){
+        if(savedInstanceState != null && savedInstanceState.containsKey(KEY_RECIPE)){
             super.onRestoreInstanceState(savedInstanceState);
             recipe = savedInstanceState.getParcelable(KEY_RECIPE);
         }else {
@@ -36,26 +48,13 @@ public class RecipeStepDescriptionHostActivity extends AppCompatActivity impleme
             }
         }
 
-        /*FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        RecipeStepDescriptionListFragment recipeStepDescriptionListFragment = RecipeStepDescriptionListFragment.newInstance(recipe);
-        LinearLayout listFragmentLayout = (LinearLayout) findViewById(R.id.recipe_step_description_list_fragment_container);
-
-        if(listFragmentLayout != null){ //Two pane mode for tablets or landscape
-            fragmentTransaction.add(R.id.recipe_step_description_list_fragment_container, recipeStepDescriptionListFragment);
-            fragmentTransaction.commit();
-        }else { //One pane mode for portrait
-            fragmentTransaction.add(R.id.recipe_step_description_list_fragment_portrait_container, recipeStepDescriptionListFragment);
-            fragmentTransaction.commit();
-        }*/
-
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         RecipeStepDescriptionListFragment recipeStepDescriptionListFragment = RecipeStepDescriptionListFragment.newInstance(recipe);
-        //LinearLayout listFragmentLayout = (LinearLayout) findViewById(R.id.recipe_step_description_list_fragment_container);
         if(getResources().getBoolean(R.bool.is_landscape) || CommonUtil.isXLargeScreen(this)){ //Landscape or Tablets
-            fragmentTransaction.add(R.id.recipe_step_description_list_fragment_container, recipeStepDescriptionListFragment);
+            //fragmentTransaction.add(R.id.recipe_step_description_list_fragment_container, recipeStepDescriptionListFragment);
+            fragmentTransaction.add(R.id.recipe_step_description_list_fragment_portrait_container, recipeStepDescriptionListFragment);
             fragmentTransaction.commit();
         }else { //Portrait
             fragmentTransaction.add(R.id.recipe_step_description_list_fragment_portrait_container, recipeStepDescriptionListFragment);
@@ -65,15 +64,28 @@ public class RecipeStepDescriptionHostActivity extends AppCompatActivity impleme
 
     public void onListFragmentInteraction(Step step){
 
+        RecipeStepDescriptionDetailFragment recipeStepDescriptionDetailFragment = RecipeStepDescriptionDetailFragment.newInstance(step);
+
+        /*if(findViewById(R.id.recipe_step_description_list_fragment_portrait_container) == null){//Landscape or Tablet
+            //Replace the existing fragment on the right with a new one to show updated detail
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.recipe_step_description_detail_fragment_container, recipeStepDescriptionDetailFragment)
+                    .commit();
+        }else {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.recipe_step_description_list_fragment_portrait_container, recipeStepDescriptionDetailFragment)
+                    .addToBackStack(null)
+                    .commit();
+        }*/
+
        if(getResources().getBoolean(R.bool.is_landscape) || CommonUtil.isXLargeScreen(this)){ //two-pane mode
-           RecipeStepDescriptionDetailFragment recipeStepDescriptionDetailFragment = RecipeStepDescriptionDetailFragment.newInstance(step);
            // Replace the existing fragment on the right with a new one to show updated detail
            getSupportFragmentManager().beginTransaction()
                    .replace(R.id.recipe_step_description_detail_fragment_container, recipeStepDescriptionDetailFragment)
                    .commit();
         }else {
-            RecipeStepDescriptionDetailFragment recipeStepDescriptionDetailFragment = RecipeStepDescriptionDetailFragment.newInstance(step);
-            getSupportFragmentManager().beginTransaction()
+           isPortraitDetailViewShowing = true;
+           getSupportFragmentManager().beginTransaction()
                     .replace(R.id.recipe_step_description_list_fragment_portrait_container, recipeStepDescriptionDetailFragment)
                     .addToBackStack(null)
                     .commit();
@@ -83,6 +95,7 @@ public class RecipeStepDescriptionHostActivity extends AppCompatActivity impleme
     @Override
     public void onSaveInstanceState(Bundle outState){
         outState.putParcelable(KEY_RECIPE, recipe);
+        outState.putBoolean(KEY_PORTRAIT_DETAIL_SHOWING, isPortraitDetailViewShowing);
         super.onSaveInstanceState(outState);
     }
 

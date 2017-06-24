@@ -23,7 +23,7 @@ public class SimpleIdlingResource implements IdlingResource {
         return this.getClass().getName();
     }
 
-    @Override
+
     public boolean isIdleNow() {
         return mIsIdleNow.get();
     }
