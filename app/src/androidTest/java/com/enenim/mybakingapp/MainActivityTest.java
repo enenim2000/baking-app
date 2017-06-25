@@ -71,7 +71,7 @@ public class MainActivityTest {
 
     @Test
     public void mainActivityTest() {
-        ViewInteraction textView = onView(
+        /*ViewInteraction textView = onView(
                 allOf(withId(R.id.grid_item_text_view), withText(RECIPE_NAME),
                         childAtPosition(
                                 childAtPosition(
@@ -79,7 +79,7 @@ public class MainActivityTest {
                                         RECYCLER_VIEW_ITEM_POSITION),
                                 RECYCLER_VIEW_ITEM_POSITION),
                         isDisplayed()));
-        textView.check(matches(withText(RECIPE_NAME)));
+        textView.check(matches(withText(RECIPE_NAME)));*/
 
         ViewInteraction recyclerView = onView(
                 allOf(withId(R.id.recycler_view_recipe), isDisplayed()));
