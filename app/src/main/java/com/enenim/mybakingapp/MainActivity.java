@@ -1,24 +1,27 @@
 package com.enenim.mybakingapp;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
-import android.support.test.espresso.IdlingResource;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.enenim.mybakingapp.config.Constants;
 import com.enenim.mybakingapp.model.Recipe;
 import com.enenim.mybakingapp.rest.ApiClient;
 import com.enenim.mybakingapp.rest.ApiInterface;
+import com.enenim.mybakingapp.rest.InternetUtil;
 import com.enenim.mybakingapp.util.CommonUtil;
 import com.enenim.mybakingapp.util.RetrofitUtil;
 
@@ -46,6 +49,9 @@ public class MainActivity extends AppCompatActivity implements Constants, Retrof
     @BindView(R.id.pb_loading_indicator)
     ProgressBar mLoadingIndicator;
 
+    @BindView(R.id.retrofit_error_text_view)
+    TextView retrofitErrorTextView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,6 +59,27 @@ public class MainActivity extends AppCompatActivity implements Constants, Retrof
         ButterKnife.bind(this);
 
         Timber.d("Activity Created");
+
+        boolean connected = InternetUtil.isNetworkConnected(this);
+
+        if(!connected){
+            InternetUtil.showDialog(this, android.R.drawable.ic_dialog_alert, R.string.no_network_message)
+                    .setPositiveButton(R.string.action_settings, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            Intent intent = new Intent(Settings.ACTION_SETTINGS);
+
+                            if (intent.resolveActivity(getPackageManager()) != null) {
+                                startActivity(intent);
+                            }else{
+                                InternetUtil.showDialog(MainActivity.this, android.R.drawable.ic_dialog_alert, R.string.no_setting_app)
+                                        .show();
+                            }
+                        }
+                    })
+                    .show();
+            return;
+        }
 
         context = getApplicationContext();
         dataAdapter = new DataAdapter();
@@ -122,8 +149,6 @@ public class MainActivity extends AppCompatActivity implements Constants, Retrof
 
             @Override
             public void onItemLongClick(View view, int position) {
-                //Recipe recipe = recipes.get(position);
-                //Toast.makeText(context, "Long click, selected: " + recipe.getName(),Toast.LENGTH_LONG).show();
             }
         }));
 
@@ -159,6 +184,8 @@ public class MainActivity extends AppCompatActivity implements Constants, Retrof
         RetrofitUtil retrofitUtil = new RetrofitUtil();
         retrofitUtil.setApiService(apiService);
         retrofitUtil.setmLoadingIndicator(mLoadingIndicator);
+        retrofitUtil.setRecyclerView(recyclerView);
+        retrofitUtil.setMessageTextView(retrofitErrorTextView);
 
         retrofitUtil.processRequest(this, getIdlingResource());
     }

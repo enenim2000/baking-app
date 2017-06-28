@@ -13,13 +13,13 @@ import com.enenim.mybakingapp.fragment.RecipeStepDescriptionListFragment;
 import com.enenim.mybakingapp.model.Recipe;
 import com.enenim.mybakingapp.model.Step;
 import com.enenim.mybakingapp.util.CommonUtil;
-import com.google.android.exoplayer2.ExoPlayer;
+import com.google.gson.Gson;
 
 import butterknife.ButterKnife;
 
 public class RecipeStepDescriptionHostActivity extends AppCompatActivity implements RecipeStepDescriptionListFragment.OnListFragmentInteractionListener, MediaPlayerFragment.OnDetailFragmentInteractionListener, Constants {
     private Recipe recipe;
-    private boolean isPortraitDetailViewShowing = false;
+    //private boolean isPortraitDetailViewShowing = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,13 +43,17 @@ public class RecipeStepDescriptionHostActivity extends AppCompatActivity impleme
             recipe = savedInstanceState.getParcelable(KEY_RECIPE);
         }else {
             Intent intent = getIntent();
-            if(intent.hasExtra(KEY_RECIPE)){
+            if(intent.hasExtra(KEY_RECIPE_JSON)){
+                Gson gson = new Gson();
+                String recipeJson = intent.getStringExtra(KEY_RECIPE_JSON);
+                recipe = gson.fromJson(recipeJson, Recipe.class);
+            } else if(intent.hasExtra(KEY_RECIPE)){
                 recipe = intent.getParcelableExtra(KEY_RECIPE);
             }
         }
 
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
+       /* FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         RecipeStepDescriptionListFragment recipeStepDescriptionListFragment = RecipeStepDescriptionListFragment.newInstance(recipe);
         if(getResources().getBoolean(R.bool.is_landscape) || CommonUtil.isXLargeScreen(this)){ //Landscape or Tablets
@@ -59,7 +63,19 @@ public class RecipeStepDescriptionHostActivity extends AppCompatActivity impleme
         }else { //Portrait
             fragmentTransaction.add(R.id.recipe_step_description_list_fragment_portrait_container, recipeStepDescriptionListFragment);
             fragmentTransaction.commit();
+        }*/
+
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        RecipeStepDescriptionListFragment recipeStepDescriptionListFragment = (RecipeStepDescriptionListFragment) fragmentManager.findFragmentByTag(TAG_LIST_FRAGMENT);
+        if(recipeStepDescriptionListFragment == null){
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            recipeStepDescriptionListFragment = RecipeStepDescriptionListFragment.newInstance(recipe);
+            fragmentTransaction.add(R.id.recipe_step_description_list_fragment_portrait_container, recipeStepDescriptionListFragment, TAG_LIST_FRAGMENT);
+            fragmentTransaction.commit();
         }
+
+
     }
 
     public void onListFragmentInteraction(Step step){
@@ -83,19 +99,19 @@ public class RecipeStepDescriptionHostActivity extends AppCompatActivity impleme
            getSupportFragmentManager().beginTransaction()
                    .replace(R.id.recipe_step_description_detail_fragment_container, recipeStepDescriptionDetailFragment)
                    .commit();
-        }else {
-           isPortraitDetailViewShowing = true;
+       }else {
+           //isPortraitDetailViewShowing = true;
            getSupportFragmentManager().beginTransaction()
                     .replace(R.id.recipe_step_description_list_fragment_portrait_container, recipeStepDescriptionDetailFragment)
                     .addToBackStack(null)
                     .commit();
-        }
+       }
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState){
         outState.putParcelable(KEY_RECIPE, recipe);
-        outState.putBoolean(KEY_PORTRAIT_DETAIL_SHOWING, isPortraitDetailViewShowing);
+        //outState.putBoolean(KEY_PORTRAIT_DETAIL_SHOWING, isPortraitDetailViewShowing);
         super.onSaveInstanceState(outState);
     }
 

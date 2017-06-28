@@ -6,6 +6,9 @@ import android.os.Parcelable;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class Step implements Parcelable{
 
     @Expose
@@ -30,6 +33,19 @@ public class Step implements Parcelable{
 
     public Step(){
 
+    }
+
+    //For widget data
+    public Step (JSONObject stepJson) {
+        try {
+            setId(stepJson.getInt("id"));
+            setShortDescription(stepJson.optString("shortDescription"));
+            setDescription(stepJson.optString("description"));
+            setVideoURL(stepJson.optString("videoURL"));
+            setThumbnailURL(stepJson.getString("thumbnailURL"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     //Parcel Constructor

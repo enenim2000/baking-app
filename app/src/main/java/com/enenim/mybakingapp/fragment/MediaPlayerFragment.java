@@ -1,11 +1,12 @@
 package com.enenim.mybakingapp.fragment;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v4.media.session.MediaSessionCompat;
-import android.support.v4.media.session.PlaybackStateCompat;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,8 @@ import android.view.ViewGroup;
 import com.enenim.mybakingapp.R;
 import com.enenim.mybakingapp.config.Constants;
 import com.enenim.mybakingapp.model.Step;
+import com.enenim.mybakingapp.util.CommonUtil;
+import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
@@ -35,12 +38,18 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 
 public class MediaPlayerFragment extends Fragment implements ExoPlayer.EventListener, Constants{
+    private static final String TAG = MediaPlayerFragment.class.getSimpleName();
 
     private OnDetailFragmentInteractionListener mListener;
     private Step step;
 
     private SimpleExoPlayer mExoPlayer;
     private SimpleExoPlayerView simpleExoPlayerView;
+    private Long currentPosition = 0L;
+
+    private int resumeWindow;
+    private long resumePosition;
+    private Uri uri;
 
     public MediaPlayerFragment() {
         // Required empty public constructor
@@ -57,6 +66,16 @@ public class MediaPlayerFragment extends Fragment implements ExoPlayer.EventList
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (savedInstanceState != null && savedInstanceState.containsKey(KEY_IS_PLAYING)) {
+            currentPosition = savedInstanceState.getLong("current_position");
+        }
+
+        //To preserve fragment during orientation changes
+        setRetainInstance(true);
+
+        clearResumePosition();
+
         if (getArguments() != null) {
             if(step == null){
                 step = getArguments().getParcelable(KEY_STEP);
@@ -67,6 +86,7 @@ public class MediaPlayerFragment extends Fragment implements ExoPlayer.EventList
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_media_player, container, false);
     }
@@ -75,14 +95,15 @@ public class MediaPlayerFragment extends Fragment implements ExoPlayer.EventList
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        //CommonUtil.getMimeType(step.getVideoURL());
-
-        if(!KEY_EMPTY.equalsIgnoreCase(step.getVideoURL().trim())){
-            //Do nothing
+        if(!TextUtils.isEmpty(step.getVideoURL().trim())
+                || CommonUtil.getMimeType(step.getThumbnailURL()).equalsIgnoreCase("video") ){
             getActivity().findViewById(R.id.recipe_image_view_container).setVisibility(View.GONE);
             getActivity().findViewById(R.id.playerView).setVisibility(View.VISIBLE);
-            initializePlayer(Uri.parse(step.getVideoURL()));
-        }else if(!KEY_EMPTY.equalsIgnoreCase(step.getThumbnailURL().trim())){
+            uri = Uri.parse(step.getVideoURL());
+
+            initializePlayer();
+
+        }else if(!TextUtils.isEmpty(step.getThumbnailURL().trim())){
             simpleExoPlayerView.setVisibility(View.GONE);
             getActivity().findViewById(R.id.recipe_image_view_container).setVisibility(View.VISIBLE);
         }else {
@@ -156,18 +177,15 @@ public class MediaPlayerFragment extends Fragment implements ExoPlayer.EventList
         this.step = step;
     }
 
-    private void initializePlayer(Uri uri) {
+    private void initializePlayer() {
         if (mExoPlayer == null) {
             DefaultBandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
-
             LoadControl loadControl = new DefaultLoadControl();
 
             TrackSelector trackSelector = new DefaultTrackSelector();
             mExoPlayer = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector, loadControl);
             mExoPlayer.setPlayWhenReady(true);
-
             simpleExoPlayerView = (SimpleExoPlayerView) getActivity().findViewById(R.id.playerView);
-            //simpleExoPlayerView.setVisibility(View.VISIBLE);
 
             simpleExoPlayerView.setUseController(true);
             simpleExoPlayerView.requestFocus();
@@ -191,20 +209,71 @@ public class MediaPlayerFragment extends Fragment implements ExoPlayer.EventList
     @Override
     public void onPause() {
         super.onPause();
-        releasePlayer();
+        if (Util.SDK_INT <= 23) {
+            //releasePlayer();
+        }
+        updateResumePosition();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        releasePlayer();
+        if (Util.SDK_INT > 23) {
+            releasePlayer();
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putLong("current_position", mExoPlayer.getCurrentPosition());
     }
 
     private void releasePlayer() {
         if (mExoPlayer != null) {
-            mExoPlayer.stop();
+            updateResumePosition();
             mExoPlayer.release();
             mExoPlayer = null;
+        }
+    }
+
+    private void updateResumePosition() {
+        resumeWindow = mExoPlayer.getCurrentWindowIndex();
+        resumePosition = mExoPlayer.isCurrentWindowSeekable() ? Math.max(0, mExoPlayer.getCurrentPosition())
+                : C.TIME_UNSET;
+    }
+
+    private void clearResumePosition() {
+        resumeWindow = C.INDEX_UNSET;
+        resumePosition = C.TIME_UNSET;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (Util.SDK_INT > 23) {
+            initializePlayer();
+        }
+        if(mExoPlayer != null){
+            simpleExoPlayerView = (SimpleExoPlayerView) getActivity().findViewById(R.id.playerView);
+            simpleExoPlayerView.setPlayer(mExoPlayer);
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        initializePlayer();
+        /*if ((Util.SDK_INT <= 23 || mExoPlayer == null)) {
+            initializePlayer();
+        }*/
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            initializePlayer();
         }
     }
 }

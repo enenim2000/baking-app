@@ -12,5 +12,7 @@
     <string name="play">Play</string>
     <string name="pause">Pause</string>
     <string name="restart">Restart</string>
-
+    <string name="no_network_message">You are offline, Kindly check your network settings</string>
+    <string name="no_setting_app">No settings app installed on your device</string>
+    <string name="action_settings">Settings</string>
 </resources>

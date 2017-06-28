@@ -1,34 +1,21 @@
 package com.enenim.mybakingapp.fragment;
 
-import android.content.pm.ActivityInfo;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.widget.GridLayoutManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.enenim.mybakingapp.MainActivity;
 import com.enenim.mybakingapp.R;
 import com.enenim.mybakingapp.config.Constants;
 import com.enenim.mybakingapp.model.Step;
-import com.enenim.mybakingapp.util.CommonUtil;
-import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
-
-import java.util.ArrayList;
-
-import static android.content.ContentValues.TAG;
 
 public class RecipeStepDescriptionDetailFragment extends Fragment implements Constants {
-    private static final String TAG = RecipeStepDescriptionDetailFragment.class.getSimpleName();
+    //private static final String TAG = RecipeStepDescriptionDetailFragment.class.getSimpleName();
     private Step step;
-
 
     public RecipeStepDescriptionDetailFragment() {
         // Required empty public constructor
@@ -55,11 +42,17 @@ public class RecipeStepDescriptionDetailFragment extends Fragment implements Con
             step = savedInstanceState.getParcelable(KEY_STEP);
         }
 
+        // find the retained fragment after configuration changed
         FragmentManager fragmentManager = getChildFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        Fragment mediaPlayerFragment = MediaPlayerFragment.newInstance(step);
-        fragmentTransaction.add(R.id.exo_player_fragment_container, mediaPlayerFragment);
-        fragmentTransaction.commit();
+
+        MediaPlayerFragment mediaPlayerFragment = (MediaPlayerFragment) fragmentManager.findFragmentByTag(TAG_MEDIA_FRAGMENT);
+
+        if(mediaPlayerFragment == null){
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            mediaPlayerFragment = MediaPlayerFragment.newInstance(step);
+            fragmentTransaction.add(R.id.exo_player_fragment_container, mediaPlayerFragment, TAG_MEDIA_FRAGMENT);
+            fragmentTransaction.commit();
+        }
     }
 
     @Override

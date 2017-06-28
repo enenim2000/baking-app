@@ -14,4 +14,5 @@
     <dimen name="margin_image_button">15dp</dimen>
 
     <dimen name="widget_margin">8dp</dimen>
+    <dimen name="divider_height">1dp</dimen>
 </resources>

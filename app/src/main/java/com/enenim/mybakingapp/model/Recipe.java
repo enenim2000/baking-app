@@ -5,6 +5,10 @@ import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,6 +43,26 @@ public class Recipe implements Parcelable{
         in.readTypedList(steps, Step.CREATOR);
         setServings(in.readInt());
         setImage(in.readString());
+    }
+
+    public Recipe(JSONObject jsonRecipe) throws JSONException {
+
+        setName(jsonRecipe.getString("name"));
+        setId(jsonRecipe.getLong("id"));
+        setServings(jsonRecipe.getInt("servings"));
+        setImage(jsonRecipe.getString("image"));
+
+        setIngredients(new ArrayList<Ingredient>());
+        JSONArray ingredients = jsonRecipe.getJSONArray("ingredients");
+        for (int i = 0; i < ingredients.length(); i++) {
+            getIngredients().add(new Ingredient(ingredients.getJSONObject(i)));
+        }
+
+        setSteps(new ArrayList<Step>());
+        JSONArray stepsJA = jsonRecipe.getJSONArray("steps");
+        for (int i = 0; i < stepsJA.length(); i++) {
+            getSteps().add(new Step(stepsJA.getJSONObject(i)));
+        }
     }
 
     public static final Creator<Recipe> CREATOR = new Creator<Recipe>() {

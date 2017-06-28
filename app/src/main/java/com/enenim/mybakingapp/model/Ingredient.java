@@ -6,9 +6,8 @@ import android.os.Parcelable;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-/**
- * Created by enenim on 5/28/17.
- */
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class Ingredient implements Parcelable{
 
@@ -26,6 +25,16 @@ public class Ingredient implements Parcelable{
 
     public Ingredient(){
 
+    }
+
+    public Ingredient(JSONObject ingredientJson) {
+        try {
+            setQuantity(ingredientJson.getDouble("quantity"));
+            setMeasure(ingredientJson.optString("measure"));
+            setIngredient(ingredientJson.optString("ingredient"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     //Parcel Constructor
