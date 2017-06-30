@@ -15,28 +15,26 @@ import com.enenim.mybakingapp.model.Step;
 import com.enenim.mybakingapp.util.CommonUtil;
 import com.google.gson.Gson;
 
+import java.util.List;
+
 import butterknife.ButterKnife;
 
-public class RecipeStepDescriptionHostActivity extends AppCompatActivity implements RecipeStepDescriptionListFragment.OnListFragmentInteractionListener, MediaPlayerFragment.OnDetailFragmentInteractionListener, Constants {
+public class RecipeStepDescriptionHostActivity extends AppCompatActivity implements RecipeStepDescriptionListFragment.OnListFragmentInteractionListener, MediaPlayerFragment.OnMediaFragmentInteractionListener, Constants {
     private Recipe recipe;
-    //private boolean isPortraitDetailViewShowing = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        /*if(savedInstanceState != null && savedInstanceState.containsKey(KEY_PORTRAIT_DETAIL_SHOWING)){
-            if(getResources().getBoolean(R.bool.is_landscape) && savedInstanceState.getBoolean(KEY_PORTRAIT_DETAIL_SHOWING)){
-                setContentView(R.layout.activity_recipe_step_description_host_video_in_full_view);
-            }else {
-                setContentView(R.layout.activity_recipe_step_description_host);
-            }
-        }else {
-            setContentView(R.layout.activity_recipe_step_description_host);
-        }*/
-
         setContentView(R.layout.activity_recipe_step_description_host);
-
         ButterKnife.bind(this);
+
+        if( getSupportActionBar() != null){
+            if(getResources().getBoolean(R.bool.is_landscape)){
+                getSupportActionBar().hide();
+            }else {
+                getSupportActionBar().show();
+            }
+        }
 
         if(savedInstanceState != null && savedInstanceState.containsKey(KEY_RECIPE)){
             super.onRestoreInstanceState(savedInstanceState);
@@ -52,20 +50,6 @@ public class RecipeStepDescriptionHostActivity extends AppCompatActivity impleme
             }
         }
 
-
-       /* FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        RecipeStepDescriptionListFragment recipeStepDescriptionListFragment = RecipeStepDescriptionListFragment.newInstance(recipe);
-        if(getResources().getBoolean(R.bool.is_landscape) || CommonUtil.isXLargeScreen(this)){ //Landscape or Tablets
-            //fragmentTransaction.add(R.id.recipe_step_description_list_fragment_container, recipeStepDescriptionListFragment);
-            fragmentTransaction.add(R.id.recipe_step_description_list_fragment_portrait_container, recipeStepDescriptionListFragment);
-            fragmentTransaction.commit();
-        }else { //Portrait
-            fragmentTransaction.add(R.id.recipe_step_description_list_fragment_portrait_container, recipeStepDescriptionListFragment);
-            fragmentTransaction.commit();
-        }*/
-
-
         FragmentManager fragmentManager = getSupportFragmentManager();
         RecipeStepDescriptionListFragment recipeStepDescriptionListFragment = (RecipeStepDescriptionListFragment) fragmentManager.findFragmentByTag(TAG_LIST_FRAGMENT);
         if(recipeStepDescriptionListFragment == null){
@@ -78,21 +62,9 @@ public class RecipeStepDescriptionHostActivity extends AppCompatActivity impleme
 
     }
 
-    public void onListFragmentInteraction(Step step){
+    public void onListFragmentInteraction(Step step, List<Step> steps, int position){
 
-        RecipeStepDescriptionDetailFragment recipeStepDescriptionDetailFragment = RecipeStepDescriptionDetailFragment.newInstance(step);
-
-        /*if(findViewById(R.id.recipe_step_description_list_fragment_portrait_container) == null){//Landscape or Tablet
-            //Replace the existing fragment on the right with a new one to show updated detail
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.recipe_step_description_detail_fragment_container, recipeStepDescriptionDetailFragment)
-                    .commit();
-        }else {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.recipe_step_description_list_fragment_portrait_container, recipeStepDescriptionDetailFragment)
-                    .addToBackStack(null)
-                    .commit();
-        }*/
+        RecipeStepDescriptionDetailFragment recipeStepDescriptionDetailFragment = RecipeStepDescriptionDetailFragment.newInstance(step, steps, position);
 
        if(getResources().getBoolean(R.bool.is_landscape) || CommonUtil.isXLargeScreen(this)){ //two-pane mode
            // Replace the existing fragment on the right with a new one to show updated detail
@@ -100,7 +72,6 @@ public class RecipeStepDescriptionHostActivity extends AppCompatActivity impleme
                    .replace(R.id.recipe_step_description_detail_fragment_container, recipeStepDescriptionDetailFragment)
                    .commit();
        }else {
-           //isPortraitDetailViewShowing = true;
            getSupportFragmentManager().beginTransaction()
                     .replace(R.id.recipe_step_description_list_fragment_portrait_container, recipeStepDescriptionDetailFragment)
                     .addToBackStack(null)
@@ -111,12 +82,11 @@ public class RecipeStepDescriptionHostActivity extends AppCompatActivity impleme
     @Override
     public void onSaveInstanceState(Bundle outState){
         outState.putParcelable(KEY_RECIPE, recipe);
-        //outState.putBoolean(KEY_PORTRAIT_DETAIL_SHOWING, isPortraitDetailViewShowing);
         super.onSaveInstanceState(outState);
     }
 
     @Override
-    public void onDetailFragmentInteraction(Step step) {
+    public void onMediaFragmentInteraction(Step step) {
 
     }
 }

@@ -26,4 +26,6 @@ public interface Constants {
     String KEY_METHOD_GET = "GET";
 
     String KEY_IS_PLAYING = "is_playing_key";
+
+    String KEY_STEP_POSITION = "current_step_position_key";
 }

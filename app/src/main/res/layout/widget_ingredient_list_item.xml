@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/widget_list_row"
+    android:background="@color/white">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="5dp"
+        android:textAlignment="center"
+        android:layout_marginBottom="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/widget_ingredient_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:paddingTop="5dp"
+            android:textStyle="bold"
+            android:textAlignment="center"
+            android:paddingBottom="5dp"
+            android:paddingRight="10dp"
+            android:textColor="@color/orange"
+            android:paddingLeft="10dp"
+            tools:text="Ingredient Description" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:paddingEnd="5dp"
+            android:textAlignment="textStart"
+            android:textStyle="bold"
+            android:paddingRight="10dp"
+            android:textColor="@color/orange"
+            android:paddingLeft="10dp"
+            android:text="@string/widget_measure_label"/>
+
+        <TextView
+            android:id="@+id/widget_ingredient_measure"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:paddingTop="5dp"
+            android:paddingEnd="5dp"
+            android:textStyle="italic"
+            android:paddingBottom="5dp"
+            android:textAlignment="textStart"
+            android:paddingRight="10dp"
+            android:textColor="@color/colorPrimary"
+            android:paddingLeft="10dp"
+            tools:text="TSG"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:paddingTop="5dp"
+            android:textStyle="bold"
+            android:paddingStart="40dp"
+            android:textAlignment="textEnd"
+            android:paddingBottom="5dp"
+            android:paddingRight="10dp"
+            android:textColor="@color/orange"
+            android:paddingLeft="10dp"
+            android:text="@string/widget_quantity_label"/>
+
+        <TextView
+            android:id="@+id/widget_ingredient_quantity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:paddingTop="5dp"
+            android:textStyle="italic"
+            android:textAlignment="textEnd"
+            android:paddingBottom="5dp"
+            android:paddingRight="10dp"
+            android:textColor="@color/colorPrimary"
+            android:paddingLeft="10dp"
+            tools:text="345.7"/>
+
+    </LinearLayout>
+
+    <!-- divider -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/orange"/>
+
+</LinearLayout>

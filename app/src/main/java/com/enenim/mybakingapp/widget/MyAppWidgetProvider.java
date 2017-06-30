@@ -26,9 +26,9 @@ public class MyAppWidgetProvider extends AppWidgetProvider {
             Intent intent = new Intent(context, WidgetRemoteViewsService.class);
             views.setRemoteAdapter(R.id.widget_list_view, intent);
 
-            Intent clickIntentTemplate = new Intent(context, RecipeStepDescriptionHostActivity.class);
-            PendingIntent clickPendingIntentTemplate = PendingIntent.getActivity(context, 0, clickIntentTemplate, PendingIntent.FLAG_UPDATE_CURRENT);
-            views.setPendingIntentTemplate(R.id.widget_list_view, clickPendingIntentTemplate);
+            //Intent clickIntentTemplate = new Intent(context, RecipeStepDescriptionHostActivity.class);
+            //PendingIntent clickPendingIntentTemplate = PendingIntent.getActivity(context, 0, clickIntentTemplate, PendingIntent.FLAG_UPDATE_CURRENT);
+            //views.setPendingIntentTemplate(R.id.widget_list_view, clickPendingIntentTemplate);
 
             appWidgetManager.updateAppWidget(appWidgetId, views);
         }

@@ -11,7 +11,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.enenim.mybakingapp.R;
 import com.enenim.mybakingapp.RecipeStepListDataAdapter;
@@ -32,7 +34,9 @@ public class RecipeStepDescriptionListFragment extends Fragment implements Const
     private List<Step> steps;
     private RecyclerView recyclerView;
     private RecipeStepListDataAdapter recipeStepListDataAdapter;
+    private TextView ingredient_text_view;
     private Context context;
+    private int position = 0;
 
     private LayoutInflater inflater;
     private ViewPager viewPager;
@@ -83,12 +87,15 @@ public class RecipeStepDescriptionListFragment extends Fragment implements Const
 
         inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        viewPager = (ViewPager)getActivity().findViewById(R.id.viewPager);
-        viewPager.setAdapter(new MyPagesAdapter());
+        //viewPager = (ViewPager)getActivity().findViewById(R.id.viewPager);
+        //viewPager.setAdapter(new MyPagesAdapter());
 
         //Use for testing espresso
         TextView testing_test_view = (TextView)getActivity().findViewById(R.id.testing_test_view);
         testing_test_view.setText(recipe.getName());
+
+        ingredient_text_view = (TextView)getActivity().findViewById(R.id.ingredient_text_view);
+        ingredient_text_view.setText(recipe.getIngredients().get(position).getIngredient());
 
         recyclerView = (RecyclerView)getActivity().findViewById(R.id.recycler_view_recipe_step_description_list);
         recyclerView.setHasFixedSize(true);
@@ -101,22 +108,42 @@ public class RecipeStepDescriptionListFragment extends Fragment implements Const
         recipeStepListDataAdapter.setSteps(recipe.getSteps());
         recyclerView.setAdapter(recipeStepListDataAdapter);
 
+        ImageButton stepNextButton = (ImageButton) getActivity().findViewById(R.id.ingredient_next_button);
+        stepNextButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int nextPosition = position + 1;
+                if( nextPosition < recipe.getIngredients().size() ){
+                    position = nextPosition;
+                    ingredient_text_view.setText(recipe.getIngredients().get(position).getIngredient());
+                }
+            }
+        });
+
+        ImageButton stepPrevButton = (ImageButton) getActivity().findViewById(R.id.ingredient_prev_button);
+        stepPrevButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int nextPosition = position - 1;
+                if( nextPosition >= 0 ){
+                    position = nextPosition;
+                    ingredient_text_view.setText(recipe.getIngredients().get(position).getIngredient());
+                }
+            }
+        });
+
         recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), recyclerView, new RecyclerItemClickListener.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
                 //Update Detail pane for two pane mode device, or Replace fragment with recipe description detail fragment
                 if(getActivity().getResources().getBoolean(R.bool.is_landscape) || CommonUtil.isXLargeScreen(getActivity())){ //two-pane mode
 
-                    /*getActivity().getSupportFragmentManager().beginTransaction()
-                            .add(R.id.recipe_step_description_list_fragment_container, recipeStepDescriptionDetailFragment)
-                            .commit();*/
-
-                    RecipeStepDescriptionDetailFragment recipeStepDescriptionDetailFragment = RecipeStepDescriptionDetailFragment.newInstance(steps.get(position));
+                    RecipeStepDescriptionDetailFragment recipeStepDescriptionDetailFragment = RecipeStepDescriptionDetailFragment.newInstance(steps.get(position), steps, position);
                     getActivity().getSupportFragmentManager().beginTransaction()
                             .replace(R.id.recipe_step_description_detail_fragment_container, recipeStepDescriptionDetailFragment)
                             .commit();
                 }else {
-                    RecipeStepDescriptionDetailFragment recipeStepDescriptionDetailFragment = RecipeStepDescriptionDetailFragment.newInstance(steps.get(position));
+                    RecipeStepDescriptionDetailFragment recipeStepDescriptionDetailFragment = RecipeStepDescriptionDetailFragment.newInstance(steps.get(position), steps, position);
                     getActivity().getSupportFragmentManager().beginTransaction()
                             .replace(R.id.recipe_step_description_list_fragment_portrait_container, recipeStepDescriptionDetailFragment)
                             .addToBackStack(null)
@@ -144,9 +171,9 @@ public class RecipeStepDescriptionListFragment extends Fragment implements Const
         return inflater.inflate(R.layout.fragment_recipe_step_description_list, container, false);
     }
 
-    public void onButtonPressed(Step step) {
+    public void onButtonPressed(Step step, List<Step> steps, int position) {
         if (mListener != null) {
-            mListener.onListFragmentInteraction(step);
+            mListener.onListFragmentInteraction(step, steps, position);
         }
     }
 
@@ -168,7 +195,7 @@ public class RecipeStepDescriptionListFragment extends Fragment implements Const
     }
 
     public interface OnListFragmentInteractionListener {
-        void onListFragmentInteraction(Step step);
+        void onListFragmentInteraction(Step step, List<Step> steps, int position);
     }
 
     //Implement PagerAdapter Class to handle individual page creation

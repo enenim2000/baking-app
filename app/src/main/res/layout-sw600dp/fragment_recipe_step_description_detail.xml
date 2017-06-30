@@ -5,9 +5,10 @@
 
     <LinearLayout
         android:id="@+id/exo_player_fragment_container"
+        android:layout_weight="3"
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="100dp">
+        android:layout_height="220dp">
 
         <!-- ExoPlayer Fragment will be attached here dynamically -->
 
@@ -16,8 +17,9 @@
     <LinearLayout
         android:id="@+id/recipe_image_view_container"
         android:orientation="vertical"
+        android:layout_weight="3"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="200dp"
         android:visibility="gone">
 
         <!-- Use this to display image when there is no video -->
@@ -30,12 +32,11 @@
 
 
     <LinearLayout
-        android:layout_weight="0"
         android:layout_width="match_parent"
-        android:layout_height="80dp"
+        android:layout_height="0dp"
+        android:layout_weight="2"
         android:orientation="vertical"
-        android:background="@color/white"
-        android:visibility="gone">
+        android:background="@color/white">
 
         <TextView
             android:id="@+id/text_view_step_instruction"
@@ -49,7 +50,7 @@
 
     </LinearLayout>
 
-    <LinearLayout
+   <!-- <LinearLayout
         android:orientation="horizontal"
         android:layout_weight="0"
         android:layout_width="match_parent"
@@ -81,5 +82,5 @@
         </RelativeLayout>
 
     </LinearLayout>
-
+-->
 </LinearLayout>

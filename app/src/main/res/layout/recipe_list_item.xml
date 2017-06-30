@@ -1,31 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/background"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:background="@color/white">
 
-    <ImageView
-        android:id="@+id/grid_item_image"
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:src="@drawable/recipe_card_icon_small"
-        android:scaleType="fitXY"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
-        android:contentDescription="@string/recipe_poster"/>
-
     <TextView
-        android:id="@+id/widget_recipe_text"
+        android:id="@+id/widget_recipe_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="15sp"
-        android:paddingTop="5dp"
+        android:textSize="20sp"
+        android:paddingTop="10dp"
+        android:background="@color/orange"
         android:paddingBottom="5dp"
         android:paddingRight="10dp"
-        android:textColor="@color/orange"
-        android:paddingLeft="10dp"/>
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:paddingLeft="10dp"
+        tools:text="Recipe"/>
+
+    <LinearLayout
+        android:id="@+id/widget_ingredient_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+    </LinearLayout>
 
 </LinearLayout>

@@ -40,7 +40,7 @@ import com.google.android.exoplayer2.util.Util;
 public class MediaPlayerFragment extends Fragment implements ExoPlayer.EventListener, Constants{
     private static final String TAG = MediaPlayerFragment.class.getSimpleName();
 
-    private OnDetailFragmentInteractionListener mListener;
+    private OnMediaFragmentInteractionListener mListener;
     private Step step;
 
     private SimpleExoPlayer mExoPlayer;
@@ -97,32 +97,50 @@ public class MediaPlayerFragment extends Fragment implements ExoPlayer.EventList
 
         if(!TextUtils.isEmpty(step.getVideoURL().trim())
                 || CommonUtil.getMimeType(step.getThumbnailURL()).equalsIgnoreCase("video") ){
-            getActivity().findViewById(R.id.recipe_image_view_container).setVisibility(View.GONE);
-            getActivity().findViewById(R.id.playerView).setVisibility(View.VISIBLE);
-            uri = Uri.parse(step.getVideoURL());
+            if(CommonUtil.getMimeType(step.getThumbnailURL()).equalsIgnoreCase("video")){
+                uri = Uri.parse(step.getThumbnailURL());
+            }else {
+                uri = Uri.parse(step.getVideoURL());
+            }
+            if(getActivity().findViewById(R.id.recipe_image_view_container) != null){
+                getActivity().findViewById(R.id.recipe_image_view_container).setVisibility(View.GONE);
+            }
+
+            if(getActivity().findViewById(R.id.playerView) != null){
+                getActivity().findViewById(R.id.playerView).setVisibility(View.VISIBLE);
+            }
 
             initializePlayer();
 
         }else if(!TextUtils.isEmpty(step.getThumbnailURL().trim())){
-            simpleExoPlayerView.setVisibility(View.GONE);
-            getActivity().findViewById(R.id.recipe_image_view_container).setVisibility(View.VISIBLE);
+            if(simpleExoPlayerView != null){
+                simpleExoPlayerView.setVisibility(View.GONE);
+            }
+            if(getActivity().findViewById(R.id.recipe_image_view_container) != null){
+                getActivity().findViewById(R.id.recipe_image_view_container).setVisibility(View.VISIBLE);
+            }
+
         }else {
-            getActivity().findViewById(R.id.recipe_image_view_container).setVisibility(View.GONE);
-            getActivity().findViewById(R.id.playerView).setVisibility(View.INVISIBLE);
+            if(getActivity().findViewById(R.id.recipe_image_view_container) != null){
+                getActivity().findViewById(R.id.recipe_image_view_container).setVisibility(View.GONE);
+            }
+            if(getActivity().findViewById(R.id.playerView) != null){
+                getActivity().findViewById(R.id.playerView).setVisibility(View.INVISIBLE);
+            }
         }
     }
 
     public void onButtonPressed(Step step) {
         if (mListener != null) {
-            mListener.onDetailFragmentInteraction(step);
+            mListener.onMediaFragmentInteraction(step);
         }
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnDetailFragmentInteractionListener) {
-            mListener = (OnDetailFragmentInteractionListener) context;
+        if (context instanceof OnMediaFragmentInteractionListener) {
+            mListener = (OnMediaFragmentInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -165,8 +183,8 @@ public class MediaPlayerFragment extends Fragment implements ExoPlayer.EventList
 
     }
 
-    public interface OnDetailFragmentInteractionListener {
-        void onDetailFragmentInteraction(Step step);
+    public interface OnMediaFragmentInteractionListener {
+        void onMediaFragmentInteraction(Step step);
     }
 
     public Step getStep() {
@@ -256,7 +274,9 @@ public class MediaPlayerFragment extends Fragment implements ExoPlayer.EventList
         }
         if(mExoPlayer != null){
             simpleExoPlayerView = (SimpleExoPlayerView) getActivity().findViewById(R.id.playerView);
-            simpleExoPlayerView.setPlayer(mExoPlayer);
+            if(simpleExoPlayerView != null){
+                simpleExoPlayerView.setPlayer(mExoPlayer);
+            }
         }
     }
 

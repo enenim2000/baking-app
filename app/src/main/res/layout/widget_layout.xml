@@ -9,7 +9,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/orange">
+        android:background="@color/colorPrimary">
+
         <TextView
             android:id="@+id/widget_title_label"
             android:layout_width="match_parent"
@@ -23,7 +24,6 @@
             android:clickable="true"/>
     </LinearLayout>
 
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -32,10 +32,11 @@
             android:id="@+id/widget_list_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@android:color/white"
+            android:background="@color/white"
             android:divider="@color/orange"
             android:dividerHeight="@dimen/divider_height"
             tools:listitem="@layout/recipe_list_item" />
+
     </LinearLayout>
 
 </LinearLayout>

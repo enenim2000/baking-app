@@ -23,6 +23,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
 
+            <TextView
+                android:id="@+id/retrofit_error_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:text="Sorry unable fetch data from the network"
+                android:layout_marginTop="30dp"
+                android:layout_marginBottom="30dp"
+                android:textAlignment="center"
+                android:textSize="16sp"
+                android:textColor="@color/white"
+                android:visibility="gone"/>
+
 
             <ProgressBar
                 android:id="@+id/pb_loading_indicator"

@@ -9,8 +9,8 @@ import android.widget.RemoteViewsService;
 
 import com.enenim.mybakingapp.R;
 import com.enenim.mybakingapp.config.Constants;
+import com.enenim.mybakingapp.model.Ingredient;
 import com.enenim.mybakingapp.model.Recipe;
-import com.google.gson.Gson;
 
 import org.json.JSONArray;
 
@@ -60,17 +60,18 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
     @Override
     public RemoteViews getViewAt(int position) {
         RemoteViews rv = new RemoteViews(mContext.getPackageName(), R.layout.recipe_list_item);
-        rv.setTextViewText(R.id.widget_recipe_text, recipes.get(position).getName());
-        Gson gson = new Gson();
-        Recipe recipe = new Recipe();
-        recipe.setName(recipes.get(position).getName());
-        recipe.setServings(recipes.get(position).getServings());
-        recipe.setIngredients( recipes.get(position).getIngredients());
-        recipe.setSteps(recipes.get(position).getSteps());
+        rv.setTextViewText(R.id.widget_recipe_name, recipes.get(position).getName());
+
+        for(Ingredient ingredient : recipes.get(position).getIngredients()){
+            RemoteViews  ingRemoteViews = new RemoteViews(mContext.getPackageName(), R.layout.widget_ingredient_list_item);
+            ingRemoteViews.setTextViewText(R.id.widget_ingredient_description, ingredient.getIngredient());
+            ingRemoteViews.setTextViewText(R.id.widget_ingredient_measure, ingredient.getMeasure());
+            ingRemoteViews.setTextViewText(R.id.widget_ingredient_quantity, String.valueOf(ingredient.getQuantity()));
+            rv.addView(R.id.widget_ingredient_list,ingRemoteViews);
+        }
 
         Intent intent = new Intent();
-        intent.putExtra(KEY_RECIPE_JSON, gson.toJson(recipe));
-
+        intent.putExtra("item", position);
         rv.setOnClickFillInIntent(R.id.background, intent);
         return rv;
     }
